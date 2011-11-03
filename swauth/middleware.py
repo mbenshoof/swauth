@@ -1308,7 +1308,13 @@ class Swauth(object):
         newenv['swift.authorize'] = lambda req: None
         if not headers:
             headers = {}
-        if body:
+        # Goes with patched version of swift with autosyncing
+	try:
+	    if self.app.autosync == "auto":
+	        headers['X-Autosync-Skip'] = 1
+	except Exception, e:
+	    pass
+	if body:
             return Request.blank(path, environ=newenv, body=body,
                                  headers=headers)
         else:
